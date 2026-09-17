@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sanityClient } from 'sanity:client';
+
+const projects = await sanityClient.fetch(`*[_type == "project"]{ title, description }`);
+---
+<BaseLayout title="Projects">
+  <ul>
+    {projects.map((p) => (
+      <li>
+        <h2>{p.title}</h2>
+        <p>{p.description}</p>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

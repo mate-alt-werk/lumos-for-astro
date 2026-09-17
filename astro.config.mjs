@@ -4,14 +4,19 @@ import sitemap from "@astrojs/sitemap";
 import { SITE_URL } from "./src/consts.ts";
 import { isNoindexRoute } from "./src/utils/seo.ts";
 
+import sanity from "@sanity/astro";
+
 export default defineConfig({
   site: SITE_URL,
-  server: { port: 4322 },
-  integrations: [
-    sitemap({
-      filter: (page) => !isNoindexRoute(new URL(page).pathname),
-    }),
-  ],
+  server: { port: 4321 },
+  integrations: [sitemap({
+    filter: (page) => !isNoindexRoute(new URL(page).pathname),
+  }), sanity({
+    projectId: '5f6kpbah',
+    dataset: 'production',
+    apiVersion: '2026-03-01',
+    useCdn: false,
+  })],
   fonts: [
     {
       name: "Inter",
