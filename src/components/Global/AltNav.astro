@@ -1,0 +1,220 @@
+---
+import Icon from "@/components/Media/Icon.astro";
+import AltwerkMark from "@/assets/logo/altwerk-mark.svg";
+import globe from "@/assets/icons/globe.svg";
+
+interface Props {
+  /** Set to `false` to skip rendering this component and its children. */
+  render?: boolean;
+}
+
+const { render = true } = Astro.props;
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/work", label: "Work" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+const current = (href: string) =>
+  Astro.url.pathname.replace(/\/+$/, "") === href.replace(/\/+$/, "")
+    ? "page"
+    : undefined;
+---
+
+{
+  render && (
+    <header class="altnav_wrap">
+      <div class="altnav_group brand">
+        <a class="altnav_brand" href="/" aria-label="Studio ALT.WERK">
+          <AltwerkMark class="altnav_mark" />
+          <span>Studio ALT.WERK</span>
+        </a>
+      </div>
+
+      <nav class="altnav_group links" aria-label="Main">
+        <ul class="altnav_links">
+          {links.map((link) => (
+            <li>
+              <a
+                class="altnav_link"
+                href={link.href}
+                aria-current={current(link.href)}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <span class="altnav_dot" aria-hidden="true" />
+      </nav>
+
+      <div class="altnav_group meta">
+        <span>BP HU</span>
+        <Icon src={globe} variant="small" />
+        <time class="altnav_clock">11:11 CET</time>
+      </div>
+    </header>
+  )
+}
+
+<script>
+  import gsap from "gsap";
+  import { DateTime } from "luxon";
+
+  document.querySelectorAll<HTMLElement>(".altnav_wrap").forEach((nav) => {
+    const group = nav.querySelector<HTMLElement>(".altnav_group.links");
+    const list = group?.querySelector<HTMLElement>(".altnav_links");
+    const dot = group?.querySelector<HTMLElement>(".altnav_dot");
+
+    if (group && list && dot) {
+      const links = list.querySelectorAll<HTMLAnchorElement>(".altnav_link");
+      const active = list.querySelector<HTMLAnchorElement>(
+        '.altnav_link[aria-current="page"]',
+      );
+
+      /* Measured from `group`, the dot's own positioning context — not
+         `list`, which sits inset from it by the group's own padding. */
+      const place = (link: HTMLAnchorElement | null, animate: boolean) => {
+        if (!link) {
+          gsap.to(dot, { opacity: 0, duration: 0.2, ease: "power2.out" });
+          return;
+        }
+        const groupRect = group.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const x = linkRect.left - groupRect.left + linkRect.width / 2;
+        if (animate) {
+          gsap.to(dot, {
+            left: x,
+            opacity: 1,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.set(dot, { left: x, opacity: 1 });
+        }
+      };
+
+      /* The web font can still be swapping in on first paint, which shifts
+         link widths after this script's first measurement. Placing once
+         fonts are actually ready avoids landing off-center until the next
+         hover recalculates it. */
+      const settle = () => place(active, false);
+      document.fonts?.ready ? document.fonts.ready.then(settle) : settle();
+
+      links.forEach((link) =>
+        link.addEventListener("mouseenter", () => place(link, true)),
+      );
+      list.addEventListener("mouseleave", () => place(active, true));
+    }
+
+    const clock = nav.querySelector<HTMLTimeElement>(".altnav_clock");
+    if (clock) {
+      const tick = () => {
+        const now = DateTime.now().setZone("Europe/Budapest");
+        clock.textContent = `${now.toFormat("HH:mm")} ${now.offsetNameShort}`;
+        clock.dateTime = now.toISO() ?? "";
+      };
+      tick();
+      setInterval(tick, 60_000);
+    }
+  });
+</script>
+
+<style is:global>
+  @layer components {
+    .altnav_wrap {
+      --_glass-background: rgb(128 128 128 / 12%);
+      --_active-color: var(--brand-500);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: var(--space-1);
+      height: var(--nav-height);
+      padding-inline: var(--space-4);
+      padding-block: var(--space-2);
+      font-family: var(--primary-family);
+      font-weight: var(--primary-medium);
+      font-size: var(--text-small);
+      line-height: var(--line-height-huge);
+      letter-spacing: var(--letter-spacing-normal);
+      text-transform: uppercase;
+      color: var(--light-100);
+    }
+
+    .altnav_group {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      gap: var(--space-4);
+      padding-inline: var(--space-4);
+      background-color: var(--_glass-background);
+      backdrop-filter: blur(1rem);
+      -webkit-backdrop-filter: blur(1rem);
+      border-radius: var(--radius-small);
+
+      &.links {
+        position: relative;
+        gap: var(--space-1);
+        padding-inline: var(--space-2);
+        padding-block: var(--space-1);
+      }
+    }
+
+    .altnav_brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .altnav_mark {
+      flex: none;
+      width: 0.9375rem;
+      height: 1.5rem;
+    }
+
+    .altnav_links {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      gap: inherit;
+    }
+
+    .altnav_link {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-inline: var(--space-2);
+      border-radius: var(--radius-round);
+      color: inherit;
+      text-decoration: none;
+      &[aria-current="page"] {
+        border-radius: var(--radius-small);
+      }
+    }
+
+    .altnav_dot {
+      position: absolute;
+      bottom: var(--space-1);
+      left: 0;
+      translate: -50% 50%;
+      width: 0.3125rem;
+      height: 0.3125rem;
+      border-radius: var(--radius-round);
+      background-color: var(--_active-color);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .altnav_group.meta {
+      gap: var(--space-4);
+    }
+  }
+</style>

@@ -3,11 +3,16 @@ import Layout from "@/layouts/BaseLayout.astro";
 import Section from "@/components/Wrapper/Section.astro";
 import Heading from "@/components/Typography/Heading.astro";
 import Eyebrow from "@/components/Typography/Eyebrow.astro";
+import Paragraph from "@/components/Typography/Paragraph.astro";
 import Img from "@/components/Media/Img.astro";
 import lumos_background from "@/assets/graphics/lumos-background.svg";
 import Icon from "@/components/Media/Icon.astro";
 import logo_icon from "@/assets/logo/logo-icon.svg";
 import ContentWrapper from "@/components/Wrapper/ContentWrapper.astro";
+import Grid from "@/components/Wrapper/Grid.astro";
+import Card from "@/components/Item/Card.astro";
+import Accordion from "@/components/Interactive/Accordion.astro";
+import AccordionItem from "@/components/Interactive/AccordionItem.astro";
 ---
 
 <Layout theme="dark">
@@ -36,6 +41,59 @@ import ContentWrapper from "@/components/Wrapper/ContentWrapper.astro";
         loading="eager"
         fetchPriority="high"
       />
+    </ContentWrapper>
+  </Section>
+  <!-- cards -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper variant="auto-width">
+      <Eyebrow>features</Eyebrow>
+      <Heading tag="h2" variant="h3" maxWidth={17}>Built from components</Heading>
+    </ContentWrapper>
+    <Grid small={2} large={4} class="gap-6">
+      <Card
+        heading="Components"
+        text="Compose pages from a shared library instead of one-off markup."
+      />
+      <Card
+        heading="Styling"
+        text="Plain CSS and custom properties, no build step to fight."
+      />
+      <Card
+        heading="Content"
+        text="Astro content collections keep pages fast and structured."
+        theme="brand"
+      />
+      <Card
+        heading="Accessibility"
+        text="Semantic markup and focus states come from the components."
+      />
+    </Grid>
+  </Section>
+  <!-- accordion -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper variant="sticky-content">
+      <Eyebrow>faq</Eyebrow>
+      <Heading tag="h2" variant="h3" maxWidth={17}>Common questions</Heading>
+      <Accordion slot="column2" openFirst>
+        <AccordionItem heading="What is Lumos for Astro?">
+          <Paragraph
+            >A component framework for Astro, styled with plain CSS and custom
+            properties.</Paragraph
+          >
+        </AccordionItem>
+        <AccordionItem heading="How do I add a page?">
+          <Paragraph
+            >Add a new <code>.astro</code> file under <code>src/pages</code>,
+            following Astro's file-based routing.</Paragraph
+          >
+        </AccordionItem>
+        <AccordionItem heading="Where do I find the components?">
+          <Paragraph
+            >Every component lives in <code>src/components</code>, grouped by
+            role — see the style guide for the full set.</Paragraph
+          >
+        </AccordionItem>
+      </Accordion>
     </ContentWrapper>
   </Section>
 </Layout>

@@ -2,8 +2,8 @@
 import "@/styles/global.css";
 import BaseHead from "@/components/Utility/BaseHead.astro";
 import SkipLink from "@/components/Global/SkipLink.astro";
-import Nav from "@/components/Global/Nav.astro";
 import Footer from "@/components/Global/Footer.astro";
+import AltNav from '@/components/Global/AltNav.astro';
 import type { SeoProps } from "@/types.ts";
 
 type Props = SeoProps & {
@@ -19,7 +19,6 @@ type Props = SeoProps & {
 
 const { theme = "inherit", overlap = false, ...seo } = Astro.props;
 ---
-
 <!doctype html>
 <html lang="en" class:list={[theme !== "inherit" && `theme-${theme}`]}>
   <head>
@@ -28,7 +27,7 @@ const { theme = "inherit", overlap = false, ...seo } = Astro.props;
   </head>
   <body>
     <SkipLink />
-    <Nav overlap={overlap} />
+    <AltNav />
     <main id="main" tabindex="-1">
       <slot />
     </main>
